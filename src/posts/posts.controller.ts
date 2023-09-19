@@ -4,13 +4,15 @@ import { PostModal } from './post.modal';
 import { PostService } from './post.service';
 import {Post1} from 'libs/db/src/schemas/post.schemas'
 import {  ReturnModelType } from '@typegoose/typegoose';
+import { IsNotEmpty } from 'class-validator'
 
 class CreatePostsDto{
     
-    @ApiPropertyOptional({description: '帖子的标题',required:true})
+    @ApiPropertyOptional({description: '帖子的标题',required:true, example:'帖子标题'})
+    @IsNotEmpty({message:'请填写标题'})
     title:string
 
-    @ApiPropertyOptional({description: '帖子的内容'})
+    @ApiPropertyOptional({description: '帖子的内容', example:'帖子内容'})
     content: string 
 }
 
@@ -30,31 +32,32 @@ export class PostsController {
     
     @Post()
     @ApiOperation({summary: '创建帖子'})
-    create(@Body() body:CreatePostsDto){
-        return body
+    async create(@Body() createPostsDto :CreatePostsDto){
+        await this.postModel.create(createPostsDto)
+        return {
+            success: true
+        }
     }
 
     @Get(':id')
     @ApiOperation({summary:'帖子详情'})
-    detail(@Param('id') id: string){
-        return{
-            id,
-            title: '文章1'
-        }
+    async detail(@Param('id') id: string){
+        return await this.postModel.findById(id) 
     }
 
     @Put(':id')
     @ApiOperation({summary: '编辑帖子'})
-    update(@Param('id') id: string, @Body() body: CreatePostsDto){
+    async update(@Param('id') id: string, @Body() updatePostsDto: CreatePostsDto){
+        await this.postModel.findByIdAndUpdate(id, updatePostsDto)
         return{
-            id,
-            ...body
+          success: true
         }
     }
 
-    @Delete('id')
+    @Delete(':id')
     @ApiOperation({summary: '删除帖子'})
-    remove(@Param('id') id: string){
+    async remove(@Param('id') id: string){
+        await this.postModel.findByIdAndDelete(id)
         return{
             success: true
         }
