@@ -6,7 +6,7 @@ import {ValidationPipe} from '@nestjs/common'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
+  // await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
 
   app.useGlobalPipes(new ValidationPipe())
   
